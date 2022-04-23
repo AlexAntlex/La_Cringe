@@ -1,6 +1,5 @@
 import datetime
 import os
-import requests
 import random
 
 from flask_login import AnonymousUserMixin
@@ -75,7 +74,7 @@ def reqister():
         user = User(
             name=form.name.data,
             email=form.email.data,
-            avatar=url_for('static', filename='img/file.png')
+            avatar=url_for('static', filename='img/Feels_good_man.png')
         )
         user.set_password(form.password.data)
         session.add(user)
@@ -136,24 +135,23 @@ def delete():
 def user_profile(id):
     session = db_session.create_session()
     user = session.query(User).filter_by(id=id).first()
-    form = PostForm()
+    form = PostForm()  # форма с постами
     if user == None:
         flash('User ' + id + ' not found.')
         return render_template('login.html')
     else:
-        you = user.name
-        my = g.user.id
+        you = user.name                            # если пользователь и текущий юзер совпадают
+        my = g.user.id                             # добавляется возможность делать посты + удалять
         info = user.about
         user_id = int(id)
         if my == user_id:
-            if form.validate_on_submit():
-                file = form.file_url.data
+            if form.validate_on_submit():          # добавление поста в бд
+                file = form.file_url.data          # если есть картинка
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
                     way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'], filename)
                     file.save(way_to_file)
-                    post = PostUser(text=form.text.data,
-                                    date=datetime.datetime.now().strftime("%A %d %b %Y (%H:%M)"),
+                    post = PostUser(date=datetime.datetime.now().strftime("%A %d %b %Y (%H:%M)"),
                                     autor_id=my,
                                     file=way_to_file)
                     session.add(post)
