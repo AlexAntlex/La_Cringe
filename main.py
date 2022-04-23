@@ -52,8 +52,8 @@ def before_request():
 def index():
     session = db_session.create_session()
     my = g.user.id
-    posts = session.query(PostUser).filter(PostUser.autor_id != my).order_by(PostUser.id.desc())
-    return render_template('start_page.html', posts=posts)
+    posts = session.query(PostUser).order_by(PostUser.id.desc())
+    return render_template('start_page.html', posts=posts, link='user')
     return render_template('start_page.html')
 
 
