@@ -1,6 +1,5 @@
 import datetime
 import os
-import requests
 import random
 
 from flask_login import AnonymousUserMixin
@@ -52,10 +51,9 @@ def before_request():
 @app.route("/", methods=['GET', 'POST'])
 def index():
     session = db_session.create_session()
-    if request.method == "POST":
-        my = g.user.id
-        posts = session.query(PostUser).filter(PostUser.autor_id != my).order_by(PostUser.id.desc())
-        return render_template('start_page.html', posts=posts, check='checked', link='user')
+    my = g.user.id
+    posts = session.query(PostUser).filter(PostUser.autor_id != my).order_by(PostUser.id.desc())
+    return render_template('start_page.html', posts=posts)
     return render_template('start_page.html')
 
 
@@ -149,10 +147,10 @@ def user_profile(id):
             if form.validate_on_submit():
                 file = form.file_url.data
                 if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
+                    filename = secure_filename(file.filename) + "/" + user_id
                     way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'], filename)
                     file.save(way_to_file)
-                    post = PostUser(text=form.text.data,
+                    post = PostUser(
                                     date=datetime.datetime.now().strftime("%A %d %b %Y (%H:%M)"),
                                     autor_id=my,
                                     file=way_to_file)

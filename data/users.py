@@ -1,10 +1,11 @@
 import sqlalchemy
+
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from .db_session import SqlAlchemyBase
+from .like import user_like
 
 
 class User(SqlAlchemyBase, SerializerMixin, UserMixin):
@@ -21,8 +22,21 @@ class User(SqlAlchemyBase, SerializerMixin, UserMixin):
 
     posts_user = relationship("PostUser", backref="users")
 
+    liker = relationship('PostUser', secondary=user_like, lazy='dynamic')
+
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
+    def like(self, posts_user):
+        if not self.is_liking(posts_user):
+            self.liker.append(posts_user)
+
+    def unlike(self, posts_user):
+        if self.is_liking(posts_user):
+            self.liker.remove(posts_user)
+
+    def is_likening(self, posts_user):
+        return posts_user in self.like
