@@ -1,0 +1,43 @@
+ {% extends "base.html" %}
+
+{% block content %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts_style.css') }}" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/edit.css') }}" />
+
+<div class="row">
+    <div class="col">
+        <div class="container-fluid gedf-wrapper">
+            <form class="edit_form" action="" method="post" enctype=multipart/form-data>
+                        {{ form.hidden_tag() }}
+                        {{ form.csrf_token }}
+                    <div class="form-group">
+                        {% if im_user == 1 %}
+                            {{ form.name(class="form-control", id="name", placeholder="Имя",
+                         style="background-color: #60246c, color: #ffffff;
+                                border: 1px solid #d9906f;")}}
+                            {{ form.info(class="form-control", id="info", placeholder="Обо мне",
+                     style="background-color: #60246c, color: #ffffff;
+                            border: 1px solid #d9906f;")}}
+                        {% endif %}
+                        <div class="custom-file">
+                            {{form.avatar(type="file", class="form-control-file", id="customFile", )}}
+                            <label class="custom-file-label" for="customFile"
+                                   style="background-color: #ffffff;
+                                          border: 1px solid #d9906f;
+                                          color: #000000;">Фотография профиля</label>
+                        </div>
+                      <div class="btn-group">
+                                {{form.submit(type="Submit",value="Сохранить", class="btn btn-outline-warning my-2 my-sm-0")}}
+                          {% if im_user == 0 %}
+                          {% else %}
+                              <a class="btn btn-outline-warning my-2 my-sm-0"
+                                       href="{{url_for('delete')}}">Удалить профиль</a>
+                          {% endif %}
+                      </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

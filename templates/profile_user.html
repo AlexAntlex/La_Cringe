@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user_style.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts_style.css') }}" />
+
+<div class="container portfolio">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="heading">
+              <h2>{{you}}</h2>
+			</div>
+		</div>
+	</div>
+	<div class="bio-info">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="bio-image">
+							<img src="../{{avatar}}" alt="image" width="60%"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="bio-content">
+					{% if info %}
+						<h3>{{info}}</h3>
+					{% else %}
+						<h3>Нет информации</h3>
+					{% endif %}
+					{% if my_id == user_id %}
+					<p><a class="btn btn-outline-warning my-2 my-sm-0" href="{{url_for('edit')}}">Редактировать</a></p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container-fluid gedf-wrapper">
+	{% if my_id == user_id %}
+		<form action="" method="post" enctype=multipart/form-data>
+					{{ form.hidden_tag() }}
+					{{ form.csrf_token }}
+		  <!-- Post /////-->
+		<div class="card gedf-card" style="background-color: #91c843;">
+			<div class="card-header">
+				<ul class="nav nav-tabs card-header-tabs " id="myTab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link" id="images-tab" data-toggle="tab" role="tab" aria-controls="images"
+						   aria-selected="false" href="#images">Мои публикации</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+						<div class="form-group">
+							<div class="custom-file">
+								{{form.file_url(placeholder="file", class="form-control-file", id="customFile")}}
+											<label class="custom-file-label" for="customFile">file</label>
+							</div>
+						</div>
+						<div class="py-4"></div>
+					</div>
+				</div>
+				<div class="btn-toolbar justify-content-between">
+					<div class="btn-group">
+						{{form.submit(type="submit", class="btn btn-warning", paseholder="share", value="Опубликовать")}}
+					</div>
+					<div class="btn-group">
+						<button id="btnGroupDrop1" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false">
+							<i class="fa fa-globe"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+	{% endif %}
+	<!--end post-->
+	 <!--posted-->
+	{% for item in posts%}
+        <div class="card gedf-card" style="background-color: #343a40;">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="mr-2">
+                            <img class="rounded-circle" width="50" src="../{{avatar}}" alt="">
+                        </div>
+                        <div class="ml-2">
+                            <div class="h5 m-0 color-text">{{you}}</div>
+							<div class="h7 text-muted">@{{id}}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="dropdown">
+                            <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </button>
+							{% if my_id == user_id %}
+								<div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+									<div class="h6 dropdown-header"></div>
+									<a class="dropdown-item" href="/post_edit/{{ item.id }}">Редактировать</a>
+									<a class="dropdown-item" href="/post_delete/{{ item.id }}">Удалить</a>
+								</div>
+							{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> {{ item.date }}</div>
+                <p class="card-text color-text">
+                    {{item.text}}
+                </p>
+                {% if item.file%}
+                     <img width="450" src="../{{item.file}}" alt="post_image">
+                {% endif %}
+            </div>
+        </div>
+	{% endfor %}
+      <!--end posted-->
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user_style.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts_style.css') }}" />
+
+<div class="container-fluid gedf-wrapper">
+	<form action="" method="post" enctype=multipart/form-data>
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+	  <!-- Post /////-->
+	<div class="card gedf-card" style="background-color: #343a40;">
+		<div class="card-header">
+			<ul class="nav nav-tabs card-header-tabs " id="myTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab"
+					   aria-controls="posts" aria-selected="true">Edit
+						a publication</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" id="images-tab" data-toggle="tab" role="tab" aria-controls="images"
+					   aria-selected="false" href="#images">Images</a>
+				</li>
+			</ul>
+		</div>
+		<div class="card-body">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+					<div class="form-group">
+						<form action="" method="post">
+                            <textarea name="area" cols="140" rows="5" >{{prev_text}}</textarea>
+                            <input type="submit" value="Submit"><br>
+                        </form>
+					</div>
+
+				</div>
+				<div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+					<div class="form-group">
+						<div class="custom-file">
+							{{form.file_url(type="file", class="form-control-file", id="customFile")}}
+                                        <label class="custom-file-label" for="customFile">file</label>
+						</div>
+					</div>
+					<div class="py-4"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+    </div>
+{% endblock %}

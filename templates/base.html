@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <title>{% block title %}LaCringe{% endblock %}</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+              integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+            crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+</head>
+<body>
+        <nav class="navbar navbar-light justify-content-between " style="background-color: #91c843;">
+            <a class="navbar-brand" href="/">
+                <div class="color-text-title"><h2>La Cringe</h2></div>
+            </a>
+
+            <form class="form-inline">
+                {% if current_user.is_authenticated %}
+                    <a class="btn btn-outline-warning my-2 my-sm-0" href="/logout">Выйти</a>
+                {% else %}
+                     <div class="btn-group" role="group" aria-label="Basic">
+                          <a href="/register" class="btn btn-outline-warning my-2 my-sm-0">Регистрация</a>
+                          <a href="/login" class="btn btn-outline-warning my-2 my-sm-0">Войти</a>
+                     </div>
+                {% endif %}
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarText" aria-controls="navbarText"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                 </form>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="/">Главная страница<span class="sr-only">(current)</span></a>
+                  </li>
+                    {% if current_user.is_authenticated %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="/user/{{g.user.id}}">Мой профиль</a>
+                      </li>
+                      <li class="nav-item">
+
+                    </ul>
+                    {% endif %}
+            </div>
+        </nav>
+        <main role="main" class="container">
+            {% block content %}{% endblock %}
+        </main>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+</body>
+</html>
