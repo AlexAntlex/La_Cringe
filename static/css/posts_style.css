@@ -1,0 +1,60 @@
+body {
+            background-color: #eaffe4;
+        }
+
+        .h7 {
+            font-size: 0.8rem;
+        }
+
+        .gedf-wrapper {
+            margin-top: 0.97rem;
+        }
+
+        @media (min-width: 992px) {
+            .gedf-main {
+                padding-left: 4rem;
+                padding-right: 4rem;
+            }
+            .gedf-card {
+                margin-bottom: 2.77rem;
+            }
+        }
+
+        /**Reset Bootstrap*/
+        .dropdown-toggle::after {
+            content: none;
+            display: none;
+        }
+        .nav-tabs .nav-link.active {
+                        color: #d39e00;
+                        background-color: #671460;
+                        border-color: #ffc107 #ffc107 #d39e00;
+                        }
+        .form-control {
+            color: #fffff;
+            background-color: #fffff;
+            border: 1px solid #ffc107;}
+
+        .btn-link {
+            font-weight: 400;
+            color: var(--yellow);
+            background-color: transparent;}
+        a {
+            color: var(--yellow);
+            text-decoration: none;
+            background-color: transparent;}
+        .dropdown-item {
+            color: var(--yellow);
+            background-color: transparent;}
+
+        .dropdown-menu {
+            color: #212529;
+            background-color: #343a40;
+            }
+        .custom-file-label {
+            color: var(--grey);
+            background-color: #fffff;
+            border: 1px solid var(--yellow);}
+        .dropdown-header {
+                color: #dc10cb;
+                }

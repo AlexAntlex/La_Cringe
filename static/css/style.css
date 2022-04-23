@@ -1,0 +1,18 @@
+.color-text { color: #f5ec6b;
+              text-align: left;
+              padding-right: 20px;
+               }
+.color-text-title { color: #d9906f;
+                    font-family: cursive;
+                    font-size: 70px;
+                    background: url(letter.gif) no-repeat;
+                    padding-left: 35px;
+                    background-image: url(../brand/dumplings.png);
+                    background-repeat: no-repeat;
+                    background-size: 35px;
+                    }
+
+body {
+    background-color: #1c1c1e;
+   }
+
