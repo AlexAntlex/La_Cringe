@@ -114,12 +114,15 @@
             </div>
             <div class="card-body">
                 <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> {{ item.date }}</div>
-                <p class="card-text color-text">
-                    {{item.text}}
-                </p>
-                {% if item.file%}
-                     <img width="450" src="../{{item.file}}" alt="post_image">
-                {% endif %}
+               </div>
+                <div class="row">
+                    <div class="col">
+                       <button type="button" class="btn btn-primary">
+                            нравится<span class="badge badge-light">{{ item.like}}</span>
+                            <span class="sr-only">лайки</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 	{% endfor %}

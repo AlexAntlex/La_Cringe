@@ -30,7 +30,30 @@ p.first-paragraph {
             </div>
             <div class="card-body">
                 <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> {{ item.date }}</div>
+                <div class="row">
+                    <div class="col">
                      <img width="450" src="../{{item.file}}" alt="post_image">
+                      </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.has_liked_post(post) %}
+                                <a class="btn badge badge-light" href="{{ url_for('like_action', post_id=post.id, action='like') }}">не нравится</a>
+                            {% else %}
+                                <a class="btn badge badge-light" href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">нравится</a>
+                            {% endif %}
+                                <div class="alert alert-secondary" role="alert">
+                                        {{ posts_user.likes.count() }} нравится
+                                </div>
+                        {% else %}
+                        <div class="alert alert-secondary" role="alert">
+                            {{ posts_user.likes.count() }} нравится
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
             </div>
         </div>
 	{% endfor %}
