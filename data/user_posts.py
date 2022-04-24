@@ -3,6 +3,7 @@ from sqlalchemy import orm
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
 from .db_session import SqlAlchemyBase
+from .like import user_like
 
 
 class PostUser(SqlAlchemyBase, SerializerMixin):
@@ -16,6 +17,4 @@ class PostUser(SqlAlchemyBase, SerializerMixin):
                                  sqlalchemy.ForeignKey("users.id"))
     autor = orm.relation('User', back_populates='posts_user')
     user = relationship("User", backref="users")
-
-    recipient_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
-    likes = relationship('PostLike', backref='post_user', lazy='dynamic')
+    like = relationship('User', secondary=user_like)
