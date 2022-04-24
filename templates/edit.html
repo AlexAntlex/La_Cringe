@@ -28,10 +28,10 @@
                                           color: #000000;">Фотография профиля</label>
                         </div>
                       <div class="btn-group">
-                                {{form.submit(type="Submit",value="Сохранить", class="btn btn-outline-warning my-2 my-sm-0")}}
+                                {{form.submit(type="Submit",value="Сохранить", class="btn btn-warning my-2 my-sm-0")}}
                           {% if im_user == 0 %}
                           {% else %}
-                              <a class="btn btn-outline-warning my-2 my-sm-0"
+                              <a class="btn btn-warning my-2 my-sm-0"
                                        href="{{url_for('delete')}}">Удалить профиль</a>
                           {% endif %}
                       </div>

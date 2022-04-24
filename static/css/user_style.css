@@ -6,17 +6,19 @@
 .heading{
     background: #91c843;
     padding: 2%;
-    text-align: left;
-    box-shadow: 0px 0px 4px 0px #545b62;
-    color: #d9906f;
+    text-align: center;
+    box-shadow: 0px 0px 8px 0px #545b62;
+    color: #000000;
+    font-family: 'Roboto', sans-serif;
+
 }
 .heading img{
     width: 10%;
 }
 .bio-info{
     padding: 5%;
-    background: #161618;
-    box-shadow: 0px 0px 4px 0px #b0b3b7;
+    background: #cef794;
+    box-shadow: 0px 0px 8px 0px #b0b3b7;
 }
 .name{
     font-family: 'Charmonman', cursive;
@@ -33,8 +35,19 @@
 }
 .bio-content{
     text-align:left;
-    color: #f5ec6b;
+    color: #000000;
+    font-family: 'Roboto', sans-serif;
+
 }
+.wrap-block {
+     width: 279px;
+}
+
+.block {
+    width: 100%;
+}
+
+
 .bio-content p{
     font-weight:600;
 }

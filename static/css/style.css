@@ -2,17 +2,19 @@
               text-align: left;
               padding-right: 20px;
                }
-.color-text-title { color: #d9906f;
-                    font-family: cursive;
-                    font-size: 70px;
+.color-text-title { color: #ffc107;
+                    font-family: 'Bangers', cursive;
+                    font-size: 160px;
                     background: url(letter.gif) no-repeat;
-                    padding-left: 35px;
+                    padding-left: 65px;
                     background-image: url(../brand/dumplings.png);
                     background-repeat: no-repeat;
-                    background-size: 35px;
+                    background-size: 60px;
                     }
 
 body {
-    background-color: #1c1c1e;
+    background-color: #eaffe4;
+    background-image: url(../brand/what2.png);
+     background-repeat: repeat;
    }
 

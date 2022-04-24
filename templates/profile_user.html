@@ -4,6 +4,12 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user_style.css') }}" />
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts_style.css') }}" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
 
 <div class="container portfolio">
 	<div class="row">
@@ -26,55 +32,49 @@
 			</div>
 			<div class="col-md-6">
 				<div class="bio-content">
+
 					{% if info %}
-						<h3>{{info}}</h3>
+					<div class="wrap-block">
+						<div class="block"><h3>{{info}}</h3></div>
+					</div}>
 					{% else %}
 						<h3>Нет информации</h3>
 					{% endif %}
 					{% if my_id == user_id %}
-					<p><a class="btn btn-outline-warning my-2 my-sm-0" href="{{url_for('edit')}}">Редактировать</a></p>
+					<p><a class="btn btn-warning my-2 my-sm-0" href="{{url_for('edit')}}">Редактировать</a></p>
 					{% endif %}
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<div class="container-fluid gedf-wrapper">
+<div class="container-fluid gedf-wrapper" style="border: 1px, solid:#545b62, border-radius: 8px">
 	{% if my_id == user_id %}
 		<form action="" method="post" enctype=multipart/form-data>
 					{{ form.hidden_tag() }}
 					{{ form.csrf_token }}
 		  <!-- Post /////-->
-		<div class="card gedf-card" style="background-color: #91c843;">
+		<div  class="card text-center" style="background-color: #91c843;">
 			<div class="card-header">
-				<ul class="nav nav-tabs card-header-tabs " id="myTab" role="tablist">
-					<li class="nav-item">
-						<a class="nav-link" id="images-tab" data-toggle="tab" role="tab" aria-controls="images"
-						   aria-selected="false" href="#images">Мои публикации</a>
-					</li>
-				</ul>
+				Мои публикации
 			</div>
 			<div class="card-body">
-				<div class="tab-content" id="myTabContent">
-					<div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+
+
 						<div class="form-group">
 							<div class="custom-file">
 								{{form.file_url(placeholder="file", class="form-control-file", id="customFile")}}
-											<label class="custom-file-label" for="customFile">file</label>
+											<label class="custom-file-label" for="customFile">Загрузить изображение</label>
 							</div>
 						</div>
-						<div class="py-4"></div>
-					</div>
-				</div>
+
+
+
 				<div class="btn-toolbar justify-content-between">
 					<div class="btn-group">
-						{{form.submit(type="submit", class="btn btn-warning", paseholder="share", value="Опубликовать")}}
+						<center>{{form.submit(type="submit", class="btn btn-warning", paseholder="share", value="Опубликовать")}}</center>
 					</div>
-					<div class="btn-group">
-						<button id="btnGroupDrop1" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-							aria-expanded="false">
-							<i class="fa fa-globe"></i>
-						</button>
+
 					</div>
 				</div>
 			</div>
@@ -82,9 +82,10 @@
 		</form>
 	{% endif %}
 	<!--end post-->
+	<br>
 	 <!--posted-->
 	{% for item in posts%}
-        <div class="card gedf-card" style="background-color: #343a40;">
+        <div class="card gedf-card" style="background-color: #91c843;">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex justify-content-between align-items-center">
@@ -114,15 +115,12 @@
             </div>
             <div class="card-body">
                 <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i> {{ item.date }}</div>
-               </div>
-                <div class="row">
-                    <div class="col">
-                       <button type="button" class="btn btn-primary">
-                            нравится<span class="badge badge-light">{{ item.like}}</span>
-                            <span class="sr-only">лайки</span>
-                        </button>
-                    </div>
-                </div>
+                <p class="card-text color-text">
+                    {{item.text}}
+                </p>
+                {% if item.file%}
+                     <img width="450" src="../{{item.file}}" alt="post_image">
+                {% endif %}
             </div>
         </div>
 	{% endfor %}
