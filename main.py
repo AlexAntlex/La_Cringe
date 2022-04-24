@@ -51,10 +51,10 @@ def before_request():
 @app.route("/", methods=['GET', 'POST'])
 def index():
     session = db_session.create_session()
-    user = session.merge(current_user)
     my = g.user.id
     posts = session.query(PostUser).order_by(PostUser.id.desc())
-    return render_template('start_page.html', posts=posts, link='user', user=user, my=my)
+    return render_template('start_page.html', posts=posts, link='user')
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -166,7 +166,6 @@ def user_profile(id):
                                    form=form, posts=posts, avatar=user.avatar, id=id)
 
 
-
 @app.route('/post_delete/<int:id>', methods=['GET', 'POST'])  # удаление поста из бд
 @login_required
 def post_delete(id):
@@ -214,40 +213,6 @@ def edit():
     num = random.randint(1, 35)
     name = "img/edit/edit" + str(num) + ".jpg"
     return render_template('edit.html', info=user.about, name=user.name, form=form, im_user=1, pic=name)
-
-@app.route("/like/<int:post_id>")
-@login_required
-def like(post_id):
-    my = g.user
-    session = db_session.create_session()
-    post = PostUser.query(post_id)
-    my.like(post)
-    session.commit()
-    return redirect(url_for('posts.post', post_id=post.id, user=my))
-
-
-@app.route("/unlike/<int:post_id>")
-@login_required
-def unlike(post_id):
-    session = db_session.create_session()
-    post = PostUser.query(post_id)
-    g.user.unlike(post)
-    session.commit()
-    return redirect(url_for('posts.post', post_id=post.id, user=g.user))
-
-
-@app.route('/like/<int:post_id>/<action>')
-@login_required
-def like_action(post_id, action):
-    session = db_session.create_session()
-    post = PostUser.query.filter_by(id=post_id).first()
-    if action == 'like':
-        g.user.like_post(post)
-        session.commit()
-    if action == 'unlike':
-        g.user.unlike_post(post)
-        session.commit()
-    return redirect(request.referrer)
 
 
 if __name__ == '__main__':
