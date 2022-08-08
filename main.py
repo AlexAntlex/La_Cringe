@@ -45,8 +45,10 @@ def before_request():
 def index():
     session = db_session.create_session()
     my = g.user.id
+    user = session.query(User).filter_by(id=my).first()
     posts = session.query(Post).order_by(Post.id.desc())
-    return render_template('index.html', posts=posts, link='user')
+    form = PostForm()
+    return render_template('index.html', posts=posts, link='user', form=form, user=user)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -114,6 +116,7 @@ def user_profile(id):
     else:
         you = user.name
         my = g.user.id
+        user_cur = session.query(User).filter_by(id=my).first()
         info = user.about
         user_id = int(id)
         if my == user_id:
@@ -123,10 +126,7 @@ def user_profile(id):
                     filename = secure_filename(file.filename)
                     way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'], filename)
                     file.save(way_to_file)
-                    image_crop(way_to_file, app.config['UPLOAD_FOLDER_USER'], filename)
-                    # filename = secure_filename(file.filename) + "/" + user_id
-                    # way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'], filename)
-                    # file.save(way_to_file)
+                    image_crop(way_to_file, app.config['UPLOAD_FOLDER_USER'], file.filename)
                     way_to_miniature = app.config['UPLOAD_FOLDER_USER'] + "miniature/" + filename
                     post = Post(
                                     date=datetime.now().strftime("%A %d %b %Y (%H:%M)"),
@@ -138,12 +138,11 @@ def user_profile(id):
                     return redirect(f'{id}')
             posts = session.query(Post).filter_by(autor_id=user_id).order_by(Post.id.desc())
             return render_template('User.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
-                                   form=form, posts=posts, avatar=user.avatar, id=id)
+                                   form=form, posts=posts, avatar=user.avatar, id=id, user=user, me=user_cur)
         else:
             posts = session.query(Post).filter_by(autor_id=user_id).order_by(Post.id.desc())
-            chunks = [posts[i:i + 2] for i in range(0, len(posts), 2)]
             return render_template('User.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
-                                   form=form, chunks=chunks, avatar=user.avatar, id=id)
+                                   form=form, avatar=user.avatar, id=id, user=user, posts=posts, me=user_cur)
 
 
 @app.route("/delete", methods=['GET', 'POST'])
@@ -223,6 +222,27 @@ def edit():
     num = random.randint(1, 35)
     name = "img/edit/edit" + str(num) + ".jpg"
     return render_template('edit_profile.html', info=user.about, name=user.name, form=form, im_user=1, pic=name)
+
+
+@app.route('/like/<post_id>')
+@login_required
+def like(post_id):
+    session = db_session.create_session()
+    user = session.merge(current_user)
+    post = session.query(Post).filter_by(id=post_id).first()
+    user.liked_post(post)
+    session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/dislike/<post_id>')
+def unfollow(post_id):
+    session = db_session.create_session()
+    user = session.merge(current_user)
+    post = session.query(Post).filter_by(id=post_id).first()
+    user.unliked_post(post)
+    session.commit()
+    return redirect(request.referrer)
 
 
 def main():

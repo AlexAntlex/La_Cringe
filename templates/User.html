@@ -130,11 +130,21 @@
                          <img src="../{{item.miniature}}" style="width: 300px; height: 350px;" alt="Cringe" id="myImg"/>
                          <figcaption>
                              <strong>{{ item.date }}</strong>
-                             <a href="/user/{{item.autor_id}}"><p><strong>@{{id}}</strong></p></a>
+                             <a href="/user/{{item.autor_id}}"><p><strong>@{{item.autor.name}}</strong></p></a>
                              {% if my_id == user_id %}
                                 <a href="/post_delete/{{ item.id }}"><p><strong>Удалить этот кринж к чертям?</strong></p></a>
                              {% endif %}
                              <a href="../{{item.file}}"><p><strong>посмотреть картинку в новой вкладке (полностью)</strong></p></a>
+                             <p><strong>Посчитали кринжом: </strong>{{item.liker|length}}</p>
+                                <form action="" method="post" enctype=multipart/form-data>
+                                 {% if current_user.is_authenticated %}
+                                     {% if not me.is_liked(item) %}
+                                            <a class="btn btn-outline-primary" href="/like/{{item.id}}">кринж</a></p>
+                                      {% else %}
+                                            <a class="btn btn-outline-primary" href="/dislike/{{item.id}}">уже не кринж</a></p>
+                                     {% endif %}
+                                 {% endif %}
+                             </form>
                         </figcaption>
                     </figure>
             {% endfor %}
