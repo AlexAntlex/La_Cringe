@@ -1,3 +1,7 @@
+import os
+import random
+import string
+
 from PIL import Image
 
 
@@ -17,7 +21,7 @@ def image_crop(img, UPLOAD_FOLDER_USER, filename):
     im = Image.open(img)
     im_new = crop_max_square(im)
     im_new = im_new.resize((300, 300))
-    im_new.save(UPLOAD_FOLDER_USER + "/miniature/" + filename)
+    im_new.save(UPLOAD_FOLDER_USER + "miniature/" + filename)
 
 
 def image_crop_avatar(img, UPLOAD_FOLDER_USER, filename):
@@ -25,3 +29,11 @@ def image_crop_avatar(img, UPLOAD_FOLDER_USER, filename):
     im_new = crop_max_square(im)
     im_new = im_new.resize((300, 300))
     im_new.save(UPLOAD_FOLDER_USER + filename)
+
+
+def rename_image(ext, path):
+    let = string.ascii_letters + string.digits
+    name = ''.join(random.choice(let) for i in range(42)) + f'.{ext}'
+    while os.path.exists(path + name):
+        name = ''.join(random.choice(let) for i in range(42)) + f'.{ext}'
+    return name

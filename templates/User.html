@@ -108,15 +108,18 @@
 			var output = document.getElementById('output');
 			output.src = URL.createObjectURL(event.target.files[0]);
 			output.onload = function() {
-			  URL.revokeObjectURL(output.src) // free memory
+			  URL.revokeObjectURL(output.src)
 			}
 		  };
 		</script>
+        {% for msg in get_flashed_messages() %}
+            <div class="flash">{{msg}}</div>
+        {% endfor %}
 </form>
 		</div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Закрыть</button>
         {{form.submit(type="submit", class="btn btn-primary", value="Кринжануть")}}
       </div>
     </div>
