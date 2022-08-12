@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css?family=Quicksand:400,500");
+body {
+    background-color: #E4F3E3 !important;
+}
+
+.text {
+  font-family: "Quicksand";
+  font-size: 40px;
+  position: absolute center;
+  text-align: center;
+  padding-left: 0%;
+  color: #957BA1;
+  margin-top: 43px;
+}
+
+.text1 {
+  font-family: "Quicksand";
+  font-size: 21px;
+  text-align: center;
+  margin-top: -20px;
+  color: #957BA1;
+}
+
+.image {
+  text-align: center;
+  width: 50%;
+  -webkit-border-radius: 75%;
+  -moz-border-radius: 75%;
+  box-shadow: 0 0 0 1px #eee;
+  background: center center no-repeat;
+  background-size: cover;
+  margin: auto;
+  margin-top: 15px;
+  margin-bottom: -30px;
+  align-content: center;
+}
+
+
+.trick {
+  display: inline-block;
+  vertical-align: middle;
+  height: 150px;
+}
+
+.image:hover {
+  -webkit-transform: scale(1.12);
+  transform: scale(1.12);
+  -webkit-transition: 1.6s ease-in-out;
+  transition: 1.6s ease-in-out;
+}
+
+.trick:hover img {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+#overlay {
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  padding: 0 0 0 0;
+  opacity: 1.0;
+  -webkit-transition: opacity 2.25s ease;
+  -moz-transition: opacity 10.25s ease;
+}
+
+#box:hover #overlay {
+  opacity: 1;
+}
+
+
+.panel-group{
+  width:300px;
+  margin:auto;
+  max-width:100%;
+}
+
+.panel-heading{
+  background-color:#ACD0A8 !important;
+}
+
+.title{
+  text-align: center;
+  background-color:transparent;
+  color:#000;
+  font-family:lato;
+  font-weight:300;
+  font-size:15px;
+  max-width:100%;
+}
+
+
+#accordion{
+  background-color: transparent;
+  max-width:100%;
+}
+
+.btn-danger:hover, .btn-danger:active, .btn-danger:visited {
+    background-color: #957BA1 !important;
+    color: #ACD0A8 !important;
+}
+
+.btn-outline {
+  color: #957BA1;
+  transition: all 1.4s;
+  background-color: #ACD0A8;
+}
+
+.btn-danger.btn-outline {
+  margin-top: 9px;
+  background-color: #ACD0A8;
+  color: #957BA1;
+  border-color: #957BA1;
+  padding:auto;
+  padding:10px 0px 10px 0px;
+  margin: 1px 5px 1px 0px;
+  width: 100%;
+  text-align:center;
+  font-family: "Quicksand";
+  font-weight: 300;
+  max-width:100%;
+}
+
+.img_size {
+width: 40%;
+float: left;
+margin: 0 0 0 3.5%;
+background: #f0f0f0;
+border-radius: 5px;
+padding: 2%;
+}
+figure:first-child {
+margin-left: 0;
+}
+
+#myModal.modal-dialog {
+    width: 800px !important;
+}
+
+.modal-header {
+  font-family: "Quicksand";
+  font-weight: bold;
+  color: #957BA1;
+  border-bottom: 1px solid #957BA1;
+  background-color: #ACD0A8; important!
+  }

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+            <section>
+                <div class="grid">
+            {% for item in users%}
+                    {% if user.is_following(item) %}
+                    <figure>
+                         <img src="../{{item.avatar}}" style="width: 300px; height: 350px;" alt="Cringe" id="myImg"/>
+                         <figcaption>
+                             <a href="/user/{{item.autor_id}}"><p><strong>@{{item.name}}</strong></p></a>
+                             <a class="btn btn-outline-primary" href="/user/{{item.id}}">посмотреть этот кринж</a></p>
+                        </figcaption>
+                    </figure>
+                    {% endif %}
+            {% endfor %}
+                    </div>
+                </section>
+{% endblock %}

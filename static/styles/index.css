@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css?family=Quicksand:400,500");
+:root {
+  font-size: 16px;
+}
+
+body {
+    background-color: #E4F3E3;
+}
+
+section {
+  font-family: "Quicksand";
+  margin: 0 auto;
+  max-width: 700px;
+  width: 100%;
+}
+
+strong {
+  font-weight: bold;
+  color: #957BA1;
+}
+
+h1 {
+  font-family: "Quicksand";
+  font-size: 2rem;
+  font-weight: bold;
+  color: #957BA1;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  width: 100%;
+}
+.grid figure {
+  margin: 1rem;
+  position: relative;
+}
+.grid figure figcaption {
+  background: rgba(228, 243, 227, 0.8);
+  bottom: 0;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  padding: 1rem;
+  -webkit-transition: max-height 0.3s ease-out;
+  overflow: hidden;
+}
+.grid figure p {
+  margin-top: 0.5rem;
+}
+.grid img {
+  width: 100%;
+  height: 300px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+@media screen and (min-width: 701px) {
+  figure {
+    width: calc(50% - 2rem);
+  }
+  figure figcaption {
+    height: 50px;
+  }
+  figure:hover figcaption {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    transition: height 0.5s ease-in;
+  }
+  figure:hover p {
+    opacity: 1;
+    transition: opacity 0.5s ease-in 0.6s;
+  }
+  p {
+    opacity: 0;
+  }
+}
+@media screen and (max-width: 700px) {
+  figure {
+    width: 100%;
+  }
+  p {
+    opacity: 1;
+  }
+  figcaption {
+    height: auto;
+  }
+}
+
+
+.container h1 {
+	font-family: 'Raleway';
+	font-weight: 900;
+	text-transform: uppercase;
+	letter-spacing: -1px;
+	font-size: 50px;
+}
+hr {
+	border: 0;
+    height: 3px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+.thumbnail {
+	margin-bottom:6px;
+  display:flex;
+  flex-wrap: wrap;
+}
+
+
+.blur {
+    transform: scale(0.9);
+    opacity: 0.6;
+  	-webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: blur(2px);
+}
+
+.myFooter {
+	display: flex;
+  	flex-flow: row wrap;
+}
+
+footer {
+	background: #000;
+	font-family: 'Raleway', sans-serif;
+	color: rgb(0, 0, 0);
+	max-width: 100%;
+	margin-top: auto;
+}
+
+
+.footer-icons {
+	text-align: center;
+	font-size: 20px;
+	letter-spacing: 5px;
+	width: 100%;
+  	align-items: center;
+  	justify-content: space-around;
+  	position: relative;
+  	margin-top: 15px;
+}
+
+.footer-bottom {
+	text-align: center;
+	color: white;
+	width: 100%;
+  	align-items: center;
+  	justify-content: space-around;
+  	position: relative;
+  	margin-top: 10px;
+  	margin-bottom: 10px;
+}
+a {
+	text-decoration: none;
+}
+a:visited, a:focus{
+	color: white;
+}
+
+footer a:hover {
+	color: rgba(255, 255, 255, 0.6);
+}

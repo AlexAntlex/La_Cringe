@@ -1,0 +1,185 @@
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,300' rel='stylesheet' type='text/css'>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+				var myModal = document.getElementById('myModal')
+				var myInput = document.getElementById('myInput')
+
+				myModal.addEventListener('shown.bs.modal', function () {
+				myInput.focus()
+				})
+	</script>
+
+    <script>
+
+        // Get the modal
+        var modal = document.getElementById('myModal');
+
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.getElementById('myImg');
+        var modalImg = document.getElementById("img01");
+        var captionText = document.getElementById("caption");
+        img.onclick = function(){
+            modal.style.display = "block";
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+
+    </script>
+
+</head>
+
+<body>
+{% extends "base.html" %}
+{% block content %}
+<div class="box">
+    <div id="overlay">
+      <div class="image">
+		  <img class="image" src="../{{avatar}}" alt="image">
+        <div class="trick">
+        </div>
+      </div>
+      <ul class="text">{{you}}</ul>
+		{% if info %}
+     		 <div class="text1">{{info}}</div>
+		{% else %}
+			<div class="text1">Нет информации</div>
+		{% endif %}
+	</div>
+</div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+{% if current_user.is_authenticated %}
+    {% if my_id != user_id %}
+        {% if not me.is_following(user) %}
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+          <h4 class="panel-title">
+            <a role="button" href="/follow/{{user_id}}" >
+              <div class="title btn btn-danger btn-outline btn-lg">Следить за этмм кринжом</div>
+            </a>
+          </h4>
+        </div>
+    </div>
+        {% else %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                      <h4 class="panel-title">
+                        <a role="button" href="/unfollow/{{user_id}}" >
+                          <div class="title btn btn-danger btn-outline btn-lg">Хватит этого кринжа</div>
+                        </a>
+                      </h4>
+                    </div>
+                </div>
+         {% endif %}
+     {% endif %}
+
+    {% if my_id == user_id %}
+      <div class="panel panel-default">
+        <div class="panel-heading " role="tab" id="headingOne">
+          <h4 class="panel-title ">
+            <a role="button" href="/edit" >
+              <div class="title  btn btn-danger btn-outline btn-lg">Редактировать свою страничку</div>
+            </a>
+          </h4>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo">
+          <h4 class="panel-title">
+            <a role="button" href="/delete" >
+              <div class="title btn btn-danger btn-outline btn-lg">Удалить страницу</div>
+            </a>
+          </h4>
+        </div>
+      </div>
+        <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTree">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="collapseTwo">
+              <div class="title btn btn-danger btn-outline btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Навалить кринжа</div>
+            </a>
+          </h4>
+        </div>
+      </div>
+    </div>
+
+    <form action="" method="post" enctype=multipart/form-data>
+                        {{ form.hidden_tag() }}
+                        {{ form.csrf_token }}
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Навалить кринжа</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <div class="custom-file">
+
+    <form runat="server">
+        {{form.file_url(placeholder="file", class="form-control-file", id="customFile", type="file", accept="image/*", onchange="loadFile(event)")}}
+        <img class="img_size" id="output" />
+            <script>
+              var loadFile = function(event) {
+                var output = document.getElementById('output');
+                output.src = URL.createObjectURL(event.target.files[0]);
+                output.onload = function() {
+                  URL.revokeObjectURL(output.src)
+                }
+              };
+            </script>
+            {% for error in form.file_url.errors %}
+                <div class="flash">{{error}}</div>
+            {% endfor %}
+    </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Закрыть</button>
+            {{form.submit(type="submit", class="btn btn-primary", value="Кринжануть")}}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+{% endif %}
+	<section>
+		<div class="grid">
+			{% for item in posts%}
+                    <figure>
+                             <img src="../{{item.miniature}}" style="width: 300px; height: 350px;" alt="Cringe" id="myImg"/>
+                             <figcaption>
+                                 <strong>{{ item.date }}</strong>
+                                 <a href="/user/{{item.autor_id}}"><p><strong>@{{item.autor.name}}</strong></p></a>
+                                 {% if my_id == user_id %}
+                                    <a href="/post_delete/{{ item.id }}"><p><strong>Удалить этот кринж к чертям?</strong></p></a>
+                                 {% endif %}
+                                 <a href="../{{item.file}}" title="Image 1" class="thumbnail img-responsive"><p>
+                                     <strong>посмотреть картинку в новой вкладке (полностью)</strong></p></a>
+                                 <p><strong>Посчитали кринжом: </strong>{{item.liker|length}}</p>
+                                    <form action="" method="post" enctype=multipart/form-data>
+                                     {% if current_user.is_authenticated %}
+                                         {% if not me.is_liked(item) %}
+                                                <a class="btn btn-outline-primary" href="/like/{{item.id}}">кринж</a></p>
+                                          {% else %}
+                                                <a class="btn btn-outline-primary" href="/dislike/{{item.id}}">уже не кринж</a></p>
+                                         {% endif %}
+                                     {% endif %}
+                                 </form>
+                            </figcaption>
+                    </figure>
+            {% endfor %}
+        </div>
+	</section>
+{% endblock %}
+    </form>
+</body>

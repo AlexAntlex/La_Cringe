@@ -1,22 +1,20 @@
-import datetime
 import os
-import random
-
-from flask_login import AnonymousUserMixin
-from flask import render_template, Flask, request, flash, g, url_for
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import abort
+from datetime import datetime
+from flask import Flask, render_template, url_for, g, flash, request
 from werkzeug.utils import redirect, secure_filename
-
+from flask_login import login_user, LoginManager, AnonymousUserMixin, current_user, login_required, logout_user
 from config import Config
+from beforeUploadImage import image_crop, image_crop_avatar, rename_image
 from data import db_session
-from data.user_posts import PostUser
-from data.users import User
+from data.post import Post
+from data.user import User
+from form.delete import DeleteForm
+from form.edit import ChangeIngoForm
 from form.login import LoginForm
 from form.post import PostForm
 from form.register import RegisterForm
-from form.delete import DeleteForm
-from form.edit import ChangeIngoForm
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -32,15 +30,9 @@ login_manager.anonymous_user = Anonymous
 login_manager.init_app(app)
 
 
-#  Upload files
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
-
-
-def main():
-    db_session.global_init("db/users.sqlite")
-    app.run()
 
 
 @app.before_request
@@ -48,13 +40,14 @@ def before_request():
     g.user = current_user
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['GET'])
 def index():
     session = db_session.create_session()
     my = g.user.id
-    posts = session.query(PostUser).order_by(PostUser.id.desc())
-    return render_template('start_page.html', posts=posts, link='user')
-
+    user = session.query(User).filter_by(id=my).first()
+    posts = session.query(Post).order_by(Post.id.desc())
+    form = PostForm()
+    return render_template('index.html', posts=posts, link='user', form=form, user=user)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -64,22 +57,22 @@ def reqister():
         if form.password.data != form.password_again.data:
             return render_template('register.html', title='Регистрация',
                                    form=form,
-                                   message="Пароли не совпадают")
+                                   message="Пароли не совпадают!")
         session = db_session.create_session()
         if session.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
-                                   message="Такой пользователь уже есть")
+                                   message="Такой пользователь уже есть!")
         user = User(
             name=form.name.data,
             email=form.email.data,
-            avatar=url_for('static', filename='img/file.png')
+            avatar=url_for('static', filename='img/icon.jpg')
         )
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
         return redirect('/login')
-    return render_template('register.html', title='Регистрация', form=form)
+    return render_template('register.html', title='Создать аккаунт', form=form)
 
 
 @login_manager.user_loader
@@ -111,6 +104,63 @@ def logout():
     return redirect("/")
 
 
+@app.route('/user/<id>', methods=['GET', 'POST'])  # загрузка профиля пользователя
+def user_profile(id):
+    session = db_session.create_session()
+    user = session.query(User).filter_by(id=id).first()
+    form = PostForm()
+    if user == None:
+        flash('User ' + id + ' not found.')
+        return render_template('login.html')
+    else:
+        you = user.name
+        my = g.user.id
+        user_cur = session.query(User).filter_by(id=my).first()
+        info = user.about
+        user_id = int(id)
+        if my == user_id:
+            if form.validate_on_submit():
+                file = form.file_url.data
+
+                if not os.path.exists(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}'):
+                    os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}')
+                if not os.path.exists(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/miniature'):
+                    os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/miniature')
+                if not os.path.exists(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar'):
+                    os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar')
+
+                if file and allowed_file(file.filename):
+                        file.filename = rename_image(secure_filename(file.content_type)[6:],
+                                                     app.config['UPLOAD_FOLDER_USER'] + f'{user_id}')
+                        filename = secure_filename(file.filename)
+                        way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/', filename)
+                        file.save(way_to_file)
+                        file_length = os.path.getsize(way_to_file)
+                        if file_length < app.config['MAX_FILE_SIZE']:
+                            image_crop(way_to_file, app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/', file.filename)
+                            way_to_miniature = app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/' + "miniature/" + file.filename
+                            post = Post(
+                                            date=datetime.now().strftime("%A %d %b %Y (%H:%M)"),
+                                            autor_id=my,
+                                            file=way_to_file,
+                                            miniature=way_to_miniature)
+                            session.add(post)
+                            session.commit()
+                            flash("Фотография сохранена.")
+                            return redirect(f'{id}')
+                        else:
+                            os.remove(way_to_file)
+                            flash("Файл слишком большой")
+                flash("Файл не выбран")
+            posts = session.query(Post).filter_by(autor_id=user_id).order_by(Post.id.desc())
+            return render_template('User.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
+                                   form=form, posts=posts, avatar=user.avatar, id=id, user=user, me=user_cur)
+        else:
+            posts = session.query(Post).filter_by(autor_id=user_id).order_by(Post.id.desc())
+            return render_template('User.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
+                                   form=form, avatar=user.avatar, id=id, user=user, posts=posts, me=user_cur)
+
+
 @app.route("/delete", methods=['GET', 'POST'])
 def delete():
     form = DeleteForm()
@@ -123,56 +173,31 @@ def delete():
             session = db_session.create_session()
             my = g.user.id
             user = session.query(User).filter(User.id == my).first()
+            os.remove(user.avatar)
             if user.check_password(form.password.data):
+                posts = session.query(Post).filter_by(autor_id=user.id).order_by(Post.id.desc())
+                for item in posts:
+                    if os.path.isfile(item.file) and os.path.isfile(item.miniature):
+                        os.remove(item.file)
+                        os.remove(item.miniature)
+                    session.delete(item)
+                    session.commit()
                 session.delete(user)
                 session.commit()
                 return redirect('/register')
     return render_template('delete.html', title='Deletion', form=form)
 
 
-@app.route('/user/<id>', methods=['GET', 'POST'])  # загрузка профиля пользователя
-def user_profile(id):
-    session = db_session.create_session()
-    user = session.query(User).filter_by(id=id).first()
-    form = PostForm()
-    if user == None:
-        flash('User ' + id + ' not found.')
-        return render_template('login.html')
-    else:
-        you = user.name
-        my = g.user.id
-        info = user.about
-        user_id = int(id)
-        if my == user_id:
-            if form.validate_on_submit():
-                file = form.file_url.data
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename) + "/" + user_id
-                    way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'], filename)
-                    file.save(way_to_file)
-                    post = PostUser(
-                                    date=datetime.datetime.now().strftime("%A %d %b %Y (%H:%M)"),
-                                    autor_id=my,
-                                    file=way_to_file)
-                    session.add(post)
-                    session.commit()
-                    return redirect(f'{id}')
-            posts = session.query(PostUser).filter_by(autor_id=user_id).order_by(PostUser.id.desc())
-            return render_template('profile_user.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
-                                   form=form, posts=posts, avatar=user.avatar, id=id)
-        else:
-            posts = session.query(PostUser).filter_by(autor_id=user_id).order_by(PostUser.id.desc())
-            return render_template('profile_user.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
-                                   form=form, posts=posts, avatar=user.avatar, id=id)
-
-
-@app.route('/post_delete/<int:id>', methods=['GET', 'POST'])  # удаление поста из бд
+@app.route('/post_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def post_delete(id):
     session = db_session.create_session()
-    posts = session.query(PostUser).filter(PostUser.id == id,
-                                           PostUser.autor_id == g.user.id).first()
+    posts = session.query(Post).filter(Post.id == id,
+                                           Post.autor_id == g.user.id).first()
     if posts:
+        if os.path.isfile(posts.file) and os.path.isfile(posts.miniature):
+            os.remove(posts.file)
+            os.remove(posts.miniature)
         session.delete(posts)
         session.commit()
     else:
@@ -184,6 +209,14 @@ def post_delete(id):
 def edit():
     form = ChangeIngoForm()
     user_id = g.user.id
+
+    if not os.path.exists(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}'):
+        os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}')
+    if not os.path.exists(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/miniature'):
+        os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/miniature')
+    if not os.path.exists(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar'):
+        os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar')
+
     if request.method == "GET":
         session = db_session.create_session()
         user = session.query(User).filter_by(id=int(user_id)).first()
@@ -192,7 +225,7 @@ def edit():
             form.info.data = user.about
             form.avatar.data = user.avatar
         else:
-            os.abort(404)
+            abort(404)
     if form.validate_on_submit():
         session = db_session.create_session()
         user = session.query(User).filter_by(id=int(user_id)).first()
@@ -200,9 +233,12 @@ def edit():
             way_to_file = user.avatar
             file = form.avatar.data
             if file and allowed_file(file.filename):
+                file.filename = rename_image(secure_filename(file.content_type)[6:],
+                                             app.config['UPLOAD_FOLDER_USER'] + f'{user_id}')
                 filename = secure_filename(file.filename)
-                way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'], filename)
+                way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar/', filename)
                 file.save(way_to_file)
+                image_crop_avatar(way_to_file, app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar/', file.filename)
             user.name = form.name.data
             user.about = form.info.data
             user.avatar = way_to_file
@@ -210,9 +246,62 @@ def edit():
             return redirect(f'/user/{user_id}')
         else:
             os.abort(404)
-    num = random.randint(1, 35)
-    name = "img/edit/edit" + str(num) + ".jpg"
-    return render_template('edit.html', info=user.about, name=user.name, form=form, im_user=1, pic=name)
+    return render_template('edit_profile.html', info=user.about, name=user.name, form=form)
+
+
+@app.route('/like/<post_id>')
+@login_required
+def like(post_id):
+    session = db_session.create_session()
+    user = session.merge(current_user)
+    post = session.query(Post).filter_by(id=post_id).first()
+    user.liked_post(post)
+    session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/dislike/<post_id>')
+def unlike(post_id):
+    session = db_session.create_session()
+    user = session.merge(current_user)
+    post = session.query(Post).filter_by(id=post_id).first()
+    user.unliked_post(post)
+    session.commit()
+    return redirect(request.referrer)
+
+@app.route('/follow/<user_id>')
+@login_required
+def follow(user_id):
+    session = db_session.create_session()
+    user_cur = session.merge(current_user)
+    user = session.query(User).filter_by(id=user_id).first()
+    user_cur.follow(user)
+    session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/unfollow/<user_id>')
+def unfollow(user_id):
+    session = db_session.create_session()
+    user_cur = session.merge(current_user)
+    user = session.query(User).filter_by(id=user_id).first()
+    user_cur.unfollow(user)
+    session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/followed')
+def followed_users():
+    session = db_session.create_session()
+    user = session.merge(current_user)
+    users = session.query(User).all()
+    print(users)
+    return render_template('followed.html', title='you', users=users, user=user)
+
+
+def main():
+    db_session.global_init("db/users.sqlite")
+    app.run()
 
 
 if __name__ == '__main__':
