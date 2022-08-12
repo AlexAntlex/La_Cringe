@@ -1,9 +1,10 @@
 import sqlalchemy
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy_serializer import SerializerMixin
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .db_session import SqlAlchemyBase
+from .follow import followers
 from .like import user_post
 
 
@@ -20,10 +21,26 @@ class User(SqlAlchemyBase, SerializerMixin, UserMixin):
     avatar = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     posts = relationship("Post", backref="users")
-    liked = relationship(
-        'Post',
-        secondary=user_post,
-        back_populates='liker',)
+    liked = relationship('Post', secondary=user_post,
+                         back_populates='liker', )
+
+    followed = relationship('User',
+                            secondary=followers,
+                            primaryjoin=(followers.c.follower_id == id),
+                            secondaryjoin=(followers.c.followed_id == id),
+                            backref=backref('followers', lazy='dynamic'),
+                            lazy='dynamic')
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self, user):
+        return self.followed.filter(followers.c.followed_id == user.id).count() > 0
 
     def liked_post(self, post):
         if not self.is_liked(post):
@@ -41,5 +58,3 @@ class User(SqlAlchemyBase, SerializerMixin, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
-
-

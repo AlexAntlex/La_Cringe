@@ -55,103 +55,131 @@
 		{% endif %}
 	</div>
 </div>
-{% if my_id == user_id %}
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-  <div class="panel panel-default">
-    <div class="panel-heading " role="tab" id="headingOne">
-      <h4 class="panel-title ">
-        <a role="button" href="/edit" >
-          <div class="title  btn btn-danger btn-outline btn-lg">Редактировать свою страничку</div>
-        </a>
-      </h4>
+{% if current_user.is_authenticated %}
+    {% if my_id != user_id %}
+        {% if not me.is_following(user) %}
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+          <h4 class="panel-title">
+            <a role="button" href="/follow/{{user_id}}" >
+              <div class="title btn btn-danger btn-outline btn-lg">Следить за этмм кринжом</div>
+            </a>
+          </h4>
+        </div>
     </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
-        <a role="button" href="/delete" >
-          <div class="title btn btn-danger btn-outline btn-lg">Удалить страницу</div>
-        </a>
-      </h4>
-    </div>
-  </div>
-	<div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTree">
-      <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="collapseTwo">
-          <div class="title btn btn-danger btn-outline btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Навалить кринжа</div>
-        </a>
-      </h4>
-    </div>
-  </div>
-</div>
+        {% else %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                      <h4 class="panel-title">
+                        <a role="button" href="/unfollow/{{user_id}}" >
+                          <div class="title btn btn-danger btn-outline btn-lg">Хватит этого кринжа</div>
+                        </a>
+                      </h4>
+                    </div>
+                </div>
+         {% endif %}
+     {% endif %}
 
-<form action="" method="post" enctype=multipart/form-data>
-					{{ form.hidden_tag() }}
-					{{ form.csrf_token }}
-
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Навалить кринжа</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+    {% if my_id == user_id %}
+      <div class="panel panel-default">
+        <div class="panel-heading " role="tab" id="headingOne">
+          <h4 class="panel-title ">
+            <a role="button" href="/edit" >
+              <div class="title  btn btn-danger btn-outline btn-lg">Редактировать свою страничку</div>
+            </a>
+          </h4>
+        </div>
       </div>
-      <div class="modal-body">
-        <div class="custom-file">
-
-<form runat="server">
-	{{form.file_url(placeholder="file", class="form-control-file", id="customFile", type="file", accept="image/*", onchange="loadFile(event)")}}
-	<img class="img_size" id="output" />
-		<script>
-		  var loadFile = function(event) {
-			var output = document.getElementById('output');
-			output.src = URL.createObjectURL(event.target.files[0]);
-			output.onload = function() {
-			  URL.revokeObjectURL(output.src)
-			}
-		  };
-		</script>
-        {% for msg in get_flashed_messages() %}
-            <div class="flash">{{msg}}</div>
-        {% endfor %}
-</form>
-		</div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo">
+          <h4 class="panel-title">
+            <a role="button" href="/delete" >
+              <div class="title btn btn-danger btn-outline btn-lg">Удалить страницу</div>
+            </a>
+          </h4>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Закрыть</button>
-        {{form.submit(type="submit", class="btn btn-primary", value="Кринжануть")}}
+        <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTree">
+          <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="collapseTwo">
+              <div class="title btn btn-danger btn-outline btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Навалить кринжа</div>
+            </a>
+          </h4>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+    <form action="" method="post" enctype=multipart/form-data>
+                        {{ form.hidden_tag() }}
+                        {{ form.csrf_token }}
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Навалить кринжа</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <div class="custom-file">
+
+    <form runat="server">
+        {{form.file_url(placeholder="file", class="form-control-file", id="customFile", type="file", accept="image/*", onchange="loadFile(event)")}}
+        <img class="img_size" id="output" />
+            <script>
+              var loadFile = function(event) {
+                var output = document.getElementById('output');
+                output.src = URL.createObjectURL(event.target.files[0]);
+                output.onload = function() {
+                  URL.revokeObjectURL(output.src)
+                }
+              };
+            </script>
+            {% for error in form.file_url.errors %}
+                <div class="flash">{{error}}</div>
+            {% endfor %}
+    </form>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Закрыть</button>
+            {{form.submit(type="submit", class="btn btn-primary", value="Кринжануть")}}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 {% endif %}
 	<section>
 		<div class="grid">
 			{% for item in posts%}
                     <figure>
-                         <img src="../{{item.miniature}}" style="width: 300px; height: 350px;" alt="Cringe" id="myImg"/>
-                         <figcaption>
-                             <strong>{{ item.date }}</strong>
-                             <a href="/user/{{item.autor_id}}"><p><strong>@{{item.autor.name}}</strong></p></a>
-                             {% if my_id == user_id %}
-                                <a href="/post_delete/{{ item.id }}"><p><strong>Удалить этот кринж к чертям?</strong></p></a>
-                             {% endif %}
-                             <a href="../{{item.file}}"><p><strong>посмотреть картинку в новой вкладке (полностью)</strong></p></a>
-                             <p><strong>Посчитали кринжом: </strong>{{item.liker|length}}</p>
-                                <form action="" method="post" enctype=multipart/form-data>
-                                 {% if current_user.is_authenticated %}
-                                     {% if not me.is_liked(item) %}
-                                            <a class="btn btn-outline-primary" href="/like/{{item.id}}">кринж</a></p>
-                                      {% else %}
-                                            <a class="btn btn-outline-primary" href="/dislike/{{item.id}}">уже не кринж</a></p>
-                                     {% endif %}
+                             <img src="../{{item.miniature}}" style="width: 300px; height: 350px;" alt="Cringe" id="myImg"/>
+                             <figcaption>
+                                 <strong>{{ item.date }}</strong>
+                                 <a href="/user/{{item.autor_id}}"><p><strong>@{{item.autor.name}}</strong></p></a>
+                                 {% if my_id == user_id %}
+                                    <a href="/post_delete/{{ item.id }}"><p><strong>Удалить этот кринж к чертям?</strong></p></a>
                                  {% endif %}
-                             </form>
-                        </figcaption>
+                                 <a href="../{{item.file}}" title="Image 1" class="thumbnail img-responsive"><p>
+                                     <strong>посмотреть картинку в новой вкладке (полностью)</strong></p></a>
+                                 <p><strong>Посчитали кринжом: </strong>{{item.liker|length}}</p>
+                                    <form action="" method="post" enctype=multipart/form-data>
+                                     {% if current_user.is_authenticated %}
+                                         {% if not me.is_liked(item) %}
+                                                <a class="btn btn-outline-primary" href="/like/{{item.id}}">кринж</a></p>
+                                          {% else %}
+                                                <a class="btn btn-outline-primary" href="/dislike/{{item.id}}">уже не кринж</a></p>
+                                         {% endif %}
+                                     {% endif %}
+                                 </form>
+                            </figcaption>
                     </figure>
             {% endfor %}
         </div>
 	</section>
 {% endblock %}
+    </form>
 </body>

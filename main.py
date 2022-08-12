@@ -1,6 +1,4 @@
 import os
-import random
-
 from flask_restful import abort
 from datetime import datetime
 from flask import Flask, render_template, url_for, g, flash, request
@@ -132,26 +130,27 @@ def user_profile(id):
                     os.makedirs(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/avatar')
 
                 if file and allowed_file(file.filename):
-                    file_n = request.files['file_url'].read()
-                    file_length = len(file_n)
-                    if not(file_length > app.config['MAX_FILE_SIZE']):
                         file.filename = rename_image(secure_filename(file.content_type)[6:],
                                                      app.config['UPLOAD_FOLDER_USER'] + f'{user_id}')
                         filename = secure_filename(file.filename)
                         way_to_file = os.path.join(app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/', filename)
                         file.save(way_to_file)
-                        image_crop(way_to_file, app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/', file.filename)
-                        way_to_miniature = app.config['UPLOAD_FOLDER_USER'] + f'{user_id}' + "/miniature/" + file.filename
-                        post = Post(
-                                        date=datetime.now().strftime("%A %d %b %Y (%H:%M)"),
-                                        autor_id=my,
-                                        file=way_to_file,
-                                        miniature=way_to_miniature)
-                        session.add(post)
-                        session.commit()
-                        flash("Фотография сохранена.")
-                        return redirect(f'{id}')
-                    flash("Файл слишком большой")
+                        file_length = os.path.getsize(way_to_file)
+                        if file_length < app.config['MAX_FILE_SIZE']:
+                            image_crop(way_to_file, app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/', file.filename)
+                            way_to_miniature = app.config['UPLOAD_FOLDER_USER'] + f'{user_id}/' + "miniature/" + file.filename
+                            post = Post(
+                                            date=datetime.now().strftime("%A %d %b %Y (%H:%M)"),
+                                            autor_id=my,
+                                            file=way_to_file,
+                                            miniature=way_to_miniature)
+                            session.add(post)
+                            session.commit()
+                            flash("Фотография сохранена.")
+                            return redirect(f'{id}')
+                        else:
+                            os.remove(way_to_file)
+                            flash("Файл слишком большой")
                 flash("Файл не выбран")
             posts = session.query(Post).filter_by(autor_id=user_id).order_by(Post.id.desc())
             return render_template('User.html', title=you, you=you, user_id=user_id, my_id=my, info=info,
@@ -262,13 +261,42 @@ def like(post_id):
 
 
 @app.route('/dislike/<post_id>')
-def unfollow(post_id):
+def unlike(post_id):
     session = db_session.create_session()
     user = session.merge(current_user)
     post = session.query(Post).filter_by(id=post_id).first()
     user.unliked_post(post)
     session.commit()
     return redirect(request.referrer)
+
+@app.route('/follow/<user_id>')
+@login_required
+def follow(user_id):
+    session = db_session.create_session()
+    user_cur = session.merge(current_user)
+    user = session.query(User).filter_by(id=user_id).first()
+    user_cur.follow(user)
+    session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/unfollow/<user_id>')
+def unfollow(user_id):
+    session = db_session.create_session()
+    user_cur = session.merge(current_user)
+    user = session.query(User).filter_by(id=user_id).first()
+    user_cur.unfollow(user)
+    session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/followed')
+def followed_users():
+    session = db_session.create_session()
+    user = session.merge(current_user)
+    users = session.query(User).all()
+    print(users)
+    return render_template('followed.html', title='you', users=users, user=user)
 
 
 def main():
